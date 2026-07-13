@@ -150,14 +150,15 @@ Assess whether the proposed architecture is appropriate for the stated use case:
 
 **Well-Architected Framework alignment:**
 
-For each pillar, check if the SoW addresses it:
+For each pillar, check if the SoW addresses it. See `references/` for detailed
+checklists per pillar:
 
-1. **Operational Excellence** — Is there monitoring, alerting, runbooks?
-2. **Security** — IAM roles, encryption at rest/transit, network isolation?
-3. **Reliability** — Multi-AZ, auto-scaling, backup/recovery?
-4. **Performance Efficiency** — Right-sized instances, caching, CDN?
-5. **Cost Optimization** — Right pricing model, auto-scaling down, lifecycle policies?
-6. **Sustainability** — Efficient resource use, right-sized?
+1. **Operational Excellence** — [references/operational-excellence.md](references/operational-excellence.md)
+2. **Security** — [references/security.md](references/security.md)
+3. **Reliability** — [references/reliability.md](references/reliability.md)
+4. **Performance Efficiency** — [references/performance-efficiency.md](references/performance-efficiency.md)
+5. **Cost Optimization** — [references/cost-optimization.md](references/cost-optimization.md)
+6. **Sustainability** — [references/sustainability.md](references/sustainability.md)
 
 A POC doesn't need all of these, but a production deployment should address most.
 Flag missing pillars relative to the stated environment (POC vs production).
@@ -221,3 +222,6 @@ Present findings as:
   discrepancy between it and the architecture is the #1 blocker
 - When in doubt, suggest the partner contact their Partner Development Manager
   (PDM) or Partner Solutions Architect (PSA)
+- **Save all assessments** to the `memory/` folder using the naming convention:
+  `YYYY-MM-DD_customer-name_review.md`. This builds a local history of reviews
+  for reference.
