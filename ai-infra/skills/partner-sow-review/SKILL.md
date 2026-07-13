@@ -86,11 +86,14 @@ If GenAI workloads are detected, perform the deeper assessment in
 
 Extract and summarize:
 - **Customer name and use case** — What problem is being solved?
+- **Customer sponsor and team** — Who owns this? What's their AWS maturity?
+  See [references/customer-readiness.md](references/customer-readiness.md)
 - **Proposed architecture** — What AWS services are involved?
 - **Timeline** — How long is the engagement?
 - **Funding requested** — How much and what type (credits, POC, MAP)?
 - **Cost estimate** — What does the AWS Calculator breakdown show?
 - **Success criteria** — How will the project be measured?
+- **If MAP:** Is `map-migrated` tagging addressed? See [references/map-tagging.md](references/map-tagging.md)
 
 ### Step 3: Cost-Architecture Alignment Check
 
@@ -178,7 +181,9 @@ Assess whether the funding request is reasonable:
 - **POC funding** (typically $1K–$25K): Should be 1–3 months, focused scope,
   clear success criteria, minimal production-grade requirements
 - **Migration funding** (MAP): Should show clear migration path, TCO comparison,
-  business case for each workload
+  business case for each workload. **Must include `map-migrated` tagging via IaC** —
+  see [references/map-tagging.md](references/map-tagging.md). Without tagging,
+  credits will not apply to resources.
 - **Credits for production**: Should show customer commitment, architecture
   maturity, operational readiness
 
