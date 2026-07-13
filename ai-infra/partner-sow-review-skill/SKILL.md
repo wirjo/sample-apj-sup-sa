@@ -36,7 +36,45 @@ If any of these are missing, ask the user to provide them.
 
 ## Review process
 
-### Step 1: Understand the SoW
+### Step 1: Classify Workload Type
+
+First, identify whether the SoW contains **Generative AI** workloads,
+**Core** workloads, or both. This affects funding eligibility and review criteria.
+
+**Generative AI workload indicators:**
+- Amazon Bedrock (any model invocation, fine-tuning, agents, knowledge bases)
+- SageMaker with LLM training/inference (p5, p4d, g5, g6, trn instances)
+- GPU instances for ML (any P-series, G-series, or Trainium)
+- Foundation model hosting (vLLM, TGI, custom inference endpoints)
+- RAG architectures (vector databases + LLM)
+- AI agents, chatbots, copilots, document processing with AI
+- Model fine-tuning, RLHF, prompt engineering services
+
+**Core workload indicators:**
+- Traditional compute (EC2 general purpose, ECS, EKS without GPU)
+- Databases (RDS, Aurora, DynamoDB, ElastiCache)
+- Storage (S3, EBS, EFS without ML context)
+- Networking (VPC, CloudFront, Route 53, Transit Gateway)
+- Analytics (Redshift, Athena, Glue, QuickSight — without LLM)
+- Security (IAM, GuardDuty, Security Hub, WAF)
+- Application services (Lambda, API Gateway, SQS, SNS)
+
+**Classification output:**
+
+```
+Workload Classification:
+├── Generative AI: [X% of cost estimate]
+│   └── Services: [list]
+└── Core: [Y% of cost estimate]
+    └── Services: [list]
+```
+
+This classification matters because:
+- Generative AI workloads have different funding programs and approval criteria
+- Cost profiles are very different (GPU instances dominate GenAI; diverse services for Core)
+- Review criteria differ (GenAI needs model selection justification; Core needs WAF depth)
+
+### Step 2: Understand the SoW
 
 Extract and summarize:
 - **Customer name and use case** — What problem is being solved?
@@ -46,12 +84,12 @@ Extract and summarize:
 - **Cost estimate** — What does the AWS Calculator breakdown show?
 - **Success criteria** — How will the project be measured?
 
-### Step 2: Cost-Architecture Alignment Check
+### Step 3: Cost-Architecture Alignment Check
 
 This is the primary red flag area. Compare the cost estimate against the
-architecture and flag mismatches:
+architecture and flag mismatches.
 
-**Red flags to catch:**
+**General red flags:**
 
 | Issue | Example | Risk |
 |-------|---------|------|
@@ -63,6 +101,17 @@ architecture and flag mismatches:
 | Reserved/Savings Plans in POC | Cost estimate uses 1yr RI pricing for a 3-month POC | Misleading cost basis |
 | No cost for supporting services | Main compute priced but no CloudWatch, VPC, NAT Gateway, S3 storage | 15-30% cost undercount |
 
+**Generative AI-specific red flags:**
+
+| Issue | Example | Risk |
+|-------|---------|------|
+| Bedrock token costs missing or unrealistic | Architecture uses Bedrock but cost estimate shows $50/month for Claude | Massively under-estimated at scale |
+| GPU instance costs without utilization plan | 24/7 p5.48xlarge for a workload that runs 2 hours/day | 90% waste — should use Capacity Blocks or spot |
+| No model inference cost scaling | Fixed cost for Bedrock but architecture shows user-facing chatbot | Costs scale with users — needs usage projection |
+| Missing embedding/vector DB costs | RAG architecture but no OpenSearch Serverless or Pinecone line item | Core component uncosted |
+| Fine-tuning costs confused with inference | Single line item for "Bedrock" covering both training and inference | Very different cost profiles |
+| Knowledge base storage uncosted | Bedrock Knowledge Bases but no S3/OpenSearch for the index | Infrastructure cost missing |
+
 **How to validate:**
 
 ```bash
@@ -73,11 +122,11 @@ architecture and flag mismatches:
 Cross-reference every line item in the cost estimate against the architecture
 description. Flag any service that appears in one but not the other.
 
-### Step 3: Use-Case-Architecture Alignment Check
+### Step 4: Use-Case-Architecture Alignment Check
 
 Assess whether the proposed architecture is appropriate for the stated use case:
 
-**Red flags to catch:**
+**General red flags:**
 
 | Issue | Example | Risk |
 |-------|---------|------|
@@ -87,6 +136,17 @@ Assess whether the proposed architecture is appropriate for the stated use case:
 | Lift-and-shift only | "Modernization" SoW that's just re-hosting VMs with no architectural improvement | Doesn't justify funding |
 | Missing Well-Architected pillars | No mention of security (IAM, encryption), reliability (multi-AZ), or operations (monitoring) | Approval likely flagged |
 | Scope creep indicators | SoW covers 15 services for a 4-week engagement | Unrealistic timeline |
+
+**Generative AI-specific red flags:**
+
+| Issue | Example | Risk |
+|-------|---------|------|
+| Self-hosting when managed exists | Fine-tuning open-source LLM on EC2 when Bedrock custom model would suffice | Unnecessary operational burden |
+| GPU training for a Bedrock use case | Requesting p5 instances for a RAG chatbot that only needs Bedrock API calls | Massive over-spend |
+| No model selection justification | "We'll use Claude" with no explanation of why that model vs alternatives | Weak technical basis |
+| RAG without evaluation plan | Building RAG pipeline but no mention of retrieval quality metrics | No way to measure success |
+| Agent architecture without guardrails | Bedrock Agents or custom agents with no mention of content filtering, PII handling | Security/compliance risk |
+| Training from scratch vs fine-tuning | Proposing full model training when fine-tuning or prompt engineering would work | 10-100x cost difference |
 
 **Well-Architected Framework alignment:**
 
@@ -102,7 +162,7 @@ For each pillar, check if the SoW addresses it:
 A POC doesn't need all of these, but a production deployment should address most.
 Flag missing pillars relative to the stated environment (POC vs production).
 
-### Step 4: Funding Reasonableness Check
+### Step 5: Funding Reasonableness Check
 
 Assess whether the funding request is reasonable:
 
@@ -119,7 +179,7 @@ Assess whether the funding request is reasonable:
 - Cost estimate significantly different from requested funding amount
 - SoW that's really a training engagement disguised as implementation
 
-### Step 5: Generate report
+### Step 6: Generate report
 
 Present findings as:
 
@@ -130,6 +190,10 @@ Present findings as:
 **Use Case:** [one-line summary]
 **Funding Requested:** [amount and type]
 **Overall Assessment:** ✅ Ready / ⚠️ Needs revision / ❌ Significant concerns
+
+## Workload Classification
+- Generative AI: [X% of cost] — [services list]
+- Core: [Y% of cost] — [services list]
 
 ## Cost-Architecture Alignment
 [findings with specific line items]
