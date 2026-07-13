@@ -162,7 +162,7 @@ For each pillar, check if the SoW addresses it. See `references/` for detailed
 checklists per pillar:
 
 1. **Operational Excellence** — [references/operational-excellence.md](references/operational-excellence.md)
-2. **Security** — [references/security.md](references/security.md)
+2. **Security** — [references/security.md](references/security.md) + [references/startup-security-baseline.md](references/startup-security-baseline.md) (SSB)
 3. **Reliability** — [references/reliability.md](references/reliability.md)
 4. **Performance Efficiency** — [references/performance-efficiency.md](references/performance-efficiency.md)
 5. **Cost Optimization** — [references/cost-optimization.md](references/cost-optimization.md)
