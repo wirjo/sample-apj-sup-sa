@@ -211,6 +211,96 @@ Present findings as:
 ...
 ```
 
+### Step 7: Quality gate — Independent review
+
+After generating the initial review, perform a structured quality gate before
+delivering it to the user. This ensures the review is thorough, fair, and
+actionable.
+
+**Step 7a: Self-check (think step by step)**
+
+Before presenting the review, walk through these validation questions:
+
+1. **Completeness:** Did I check every service in the cost estimate against the
+   architecture? Did I miss any line items?
+2. **Fairness:** Am I flagging genuine red flags, or am I being overly harsh on
+   a reasonable POC-level SoW?
+3. **Specificity:** Does every finding cite a specific service, cost, or section
+   of the SoW? (No vague "could be improved" statements)
+4. **Actionability:** Does every recommendation tell the partner exactly what
+   to fix? ("Add CloudWatch alarms for X" not "improve monitoring")
+5. **Context-appropriate:** Am I holding a POC to production standards, or
+   a production SoW to POC standards?
+
+**Step 7b: Independent reviewer sub-agent**
+
+Spawn a sub-agent to perform an independent review of your assessment. The
+sub-agent acts as a "second pair of eyes" — a skeptical reviewer who challenges
+the initial assessment.
+
+Sub-agent prompt:
+```
+You are an independent reviewer of a Partner SoW assessment. Your job is to:
+
+1. Check if the reviewer missed any red flags in the SoW
+2. Challenge any findings that seem like false positives
+3. Verify the cost-architecture alignment analysis is complete
+4. Confirm the overall assessment rating (Ready/Needs revision/Significant concerns) is justified
+5. Identify any blind spots
+
+Here is the original SoW:
+[paste SoW]
+
+Here is the assessment:
+[paste assessment]
+
+Provide:
+- Missed issues (if any)
+- Findings you disagree with (with reasoning)
+- Confidence level in the overall rating (High/Medium/Low)
+- Any additional recommendations
+```
+
+After the sub-agent responds:
+- If it identifies **missed issues** → add them to the report
+- If it **disagrees with findings** → re-evaluate and either remove or justify
+- If confidence is **Low** → flag to the user that this review may need human
+  expert input
+- If confidence is **High** and no disagreements → proceed with delivery
+
+**Step 7c: Final iteration**
+
+If the sub-agent triggered changes, regenerate the report incorporating the
+feedback. Present both the final report and a brief "Review confidence" note:
+
+```
+## Review Confidence
+
+- Initial review: [X findings]
+- Independent review: [added Y, removed Z, confirmed W]
+- Final confidence: High / Medium / Low
+- Recommendation: [Ready to submit / Suggest human expert review for areas X, Y]
+```
+
+### Iteration on partner feedback
+
+After delivering the review, the partner may revise their SoW and ask for
+re-review. When this happens:
+
+1. Load the previous assessment from `memory/`
+2. Diff what changed in the revised SoW
+3. Check if previously flagged issues are now addressed
+4. Look for new issues introduced by the revisions
+5. Update the assessment and save the new version to `memory/`
+
+Naming convention for iterations:
+```
+memory/
+├── 2026-07-13_customer-name_review_v1.md
+├── 2026-07-15_customer-name_review_v2.md    ← after revision
+└── 2026-07-15_customer-name_changelog.md    ← what changed
+```
+
 ## Important notes
 
 - This is a **self-service pre-review** — it does not replace the actual
