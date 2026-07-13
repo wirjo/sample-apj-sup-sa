@@ -72,7 +72,15 @@ Workload Classification:
 This classification matters because:
 - Generative AI workloads have different funding programs and approval criteria
 - Cost profiles are very different (GPU instances dominate GenAI; diverse services for Core)
-- Review criteria differ (GenAI needs model selection justification; Core needs WAF depth)
+- Review criteria differ (GenAI needs model selection justification and VRAM validation;
+  Core needs WAF depth)
+
+If GenAI workloads are detected, perform the deeper assessment in
+[references/genai-assessment.md](references/genai-assessment.md) which covers:
+- GPU vs Bedrock decision validation
+- VRAM calculation verification
+- Capacity access strategy (P-series needs reservations; G-series is on-demand)
+- Training vs inference cost separation
 
 ### Step 2: Understand the SoW
 
