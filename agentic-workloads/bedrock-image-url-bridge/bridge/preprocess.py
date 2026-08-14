@@ -18,10 +18,16 @@ Callers get bytes from ``resolve_image_urls()`` (or anywhere else they
 trust) and pass them into the functions below; the functions here never
 reach out to the network themselves.
 
-Preprocessing algorithms ported from bedrock-image-preprocessor
-(MIT License, Copyright (c) 2026 Aditya Shahani). No repository URL is
-cited here because none was discoverable in that project's package.json
-or README at the time of this port.
+Preprocessing algorithms reimplement the publicly documented token
+formulas providers use for their own APIs -- not code copied from any
+third party. See OpenAI's "Images and vision" guide (patch-based
+counting: resized_patch_count = ceil(w/32) * ceil(h/32), then a
+per-model multiplier such as 1.62 for gpt-4.1-mini) and Anthropic's
+vision documentation (tile-based estimate: tokens = (w * h) / 750,
+after a resize cascade). Both formulas are published technical
+documentation describing observable API behavior, not licensed source
+code; this module is an independent implementation of that public
+math for Bedrock, written from those docs.
 """
 from __future__ import annotations
 

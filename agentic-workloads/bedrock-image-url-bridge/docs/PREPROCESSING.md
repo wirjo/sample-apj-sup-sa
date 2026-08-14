@@ -114,8 +114,19 @@ purely as a bytes transform via the `preprocess=` hook.
 
 ## Attribution
 
-The patch/tile resize algorithms in `bridge/preprocess.py` are ported
-from **bedrock-image-preprocessor** (MIT License, Copyright (c) 2026
-Aditya Shahani). No repository URL is cited because none was
-discoverable in that project's `package.json` or README at the time of
-this port.
+The patch/tile token formulas implemented in `bridge/preprocess.py` are
+not copied from any third-party codebase. They reimplement the publicly
+documented token-counting behavior each provider describes for its own
+API:
+
+- **Patch mode (OpenAI-style):** [OpenAI "Images and vision" guide](https://developers.openai.com/api/docs/guides/images-vision)
+  -- `resized_patch_count = ceil(width/32) * ceil(height/32)`, then a
+  per-model multiplier (e.g. 1.62 for gpt-4.1-mini).
+- **Tile mode (Anthropic-style):** [Anthropic vision documentation](https://docs.claude.com/en/docs/build-with-claude/vision)
+  -- `tokens ~= (width * height) / 750`, after a resize cascade.
+
+An earlier draft of this module was built by porting logic from a
+third-party project (`bedrock-image-preprocessor`, MIT-licensed,
+no discoverable repository URL). That provenance could not be verified
+for an `aws-samples` repo, so the implementation was rewritten directly
+from the public provider documentation above instead.

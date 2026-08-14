@@ -1,0 +1,31 @@
+name: bedrock-image-url-bridge CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "agentic-workloads/bedrock-image-url-bridge/**"
+  pull_request:
+    branches: [main]
+    paths:
+      - "agentic-workloads/bedrock-image-url-bridge/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: agentic-workloads/bedrock-image-url-bridge
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run unit tests (no network/AWS calls)
+        run: pytest tests/test_bridge_unit.py tests/test_lambda_handler.py tests/test_preprocess.py -v
